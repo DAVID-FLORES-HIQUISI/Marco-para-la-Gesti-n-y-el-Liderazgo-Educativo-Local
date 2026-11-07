@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Interactivo - Marco para la Gestión y el Liderazgo Educativo Local</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 border-b border-slate-800">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-sky-600 p-2.5 rounded-xl shadow-inner">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold leading-tight text-slate-100">Evaluación Educativa Interactiva</h1>
+                    <p class="text-xs text-sky-400 font-medium">Marco para la Gestión y el Liderazgo Educativo Local</p>
+                </div>
+            </div>
+            
+            <!-- Progress Counter Badge -->
+            <div id="progressBadge" class="hidden sm:flex items-center space-x-2 bg-slate-800 px-4 py-2 rounded-full border border-slate-700">
+                <i class="fa-solid fa-list-check text-sky-400"></i>
+                <span id="answeredCounter" class="text-sm font-semibold text-slate-200">0 / 30 Respondidas</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full">
+        
+        <!-- Welcome & Instructions Card -->
+        <div id="welcomeCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 mb-6">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100">
+                <div>
+                    <span class="inline-block px-3 py-1 bg-sky-100 text-sky-800 text-xs font-semibold rounded-full mb-2">Evaluación Formativa</span>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900">Cuestionario Diagnóstico e Integrador</h2>
+                </div>
+                <button onclick="startQuiz()" class="w-full md:w-auto bg-sky-600 hover:bg-sky-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Iniciar Evaluación</span>
+                </button>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                Este instrumento consta de 30 preguntas de opción múltiple diseñadas bajo los estándares del 
+                <strong>Marco para la Gestión y el Liderazgo Educativo Local</strong>. Las preguntas se ordenarán aleatoriamente en cada intento.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-500 font-medium bg-slate-50 p-4 rounded-xl border border-slate-100">
+                <div class="flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-sky-600 text-base"></i>
+                    <span>Sin límite de tiempo formal</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-regular fa-circle-check text-emerald-600 text-base"></i>
+                    <span>Una sola respuesta correcta por ítem</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-amber-600 text-base"></i>
+                    <span>Retroalimentación detallada al finalizar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar Container -->
+        <div id="progressBarContainer" class="hidden mb-6 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex justify-between items-center mb-2 text-xs font-semibold text-slate-600">
+                <span id="progressText">Avance: 0%</span>
+                <span id="progressCountText">0 de 30 completadas</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                <div id="progressBar" class="bg-sky-600 h-3 rounded-full transition-all duration-300 w-0"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Questions Container -->
+        <div id="quizContainer" class="space-y-6 hidden">
+            <!-- Questions dynamically injected here -->
+        </div>
+
+        <!-- Finish / Submit Section -->
+        <div id="submitSection" class="hidden mt-8 mb-12 text-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="max-w-xl mx-auto space-y-4">
+                <p class="text-sm text-slate-600">
+                    Asegúrate de responder la mayor cantidad de preguntas posibles antes de finalizar. Podrás revisar tus aciertos, errores y justificaciones al concluir.
+                </p>
+                <button onclick="calculateResults()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base px-8 py-3.5 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 mx-auto">
+                    <i class="fa-solid fa-check-double text-lg"></i>
+                    <span>Finalizar Evaluación</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section (Initially Hidden) -->
+        <div id="resultsSection" class="hidden space-y-6">
+            <!-- Summary Card -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 md:p-8">
+                <div class="text-center pb-6 border-b border-slate-100">
+                    <span class="inline-block px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full mb-3">Resultados de la Evaluación</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-2">Reporte de Desempeño</h2>
+                    <p class="text-slate-500 text-sm">Basado en el Marco para la Gestión y el Liderazgo Educativo Local</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+                    <!-- Score -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center flex flex-col justify-center items-center">
+                        <span class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Puntaje Obtenido</span>
+                        <div class="flex items-baseline space-x-1">
+                            <span id="scoreDisplay" class="text-4xl font-extrabold text-slate-900">0</span>
+                            <span class="text-lg text-slate-500 font-bold">/ 30</span>
+                        </div>
+                    </div>
+
+                    <!-- Percentage -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center flex flex-col justify-center items-center">
+                        <span class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Porcentaje de Logro</span>
+                        <span id="percentageDisplay" class="text-4xl font-extrabold text-sky-600">0%</span>
+                    </div>
+
+                    <!-- Knowledge Level -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center flex flex-col justify-center items-center">
+                        <span class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Nivel de Conocimiento</span>
+                        <div id="levelBadge" class="inline-block px-4 py-1.5 rounded-full text-sm font-bold mt-1 shadow-sm">
+                            -
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4 border-t border-slate-100">
+                    <button onclick="restartQuiz()" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Reintentar (Nuevas preguntas aleatorias)</span>
+                    </button>
+                    <a href="#reviewTitle" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Ver Revisión Detallada</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Detailed Feedback Title -->
+            <div id="reviewTitle" class="pt-4 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-check text-sky-600"></i>
+                    <span>Desglose y Justificación de Respuestas</span>
+                </h3>
+            </div>
+
+            <!-- Detailed Feedback List -->
+            <div id="feedbackContainer" class="space-y-6">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-5xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
+            <p class="font-medium text-slate-600">Cuestionario de Evaluación Educativa Local</p>
+            <p>Contenido fiel al documento "Marco para la Gestión y el Liderazgo Educativo Local".</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Full Question Bank (30 Items)
+        const rawQuestions = [
+            {
+                id: 1,
+                question: "¿Cuál es el propósito principal del Marco para la Gestión y el Liderazgo Educativo Local?",
+                options: {
+                    A: "Establecer un currículo único para todos los establecimientos.",
+                    B: "Orientar las prácticas de gestión y liderazgo intermedio para mejorar integralmente la educación pública en los territorios.",
+                    C: "Reemplazar las funciones de los equipos directivos escolares.",
+                    D: "Definir un sistema nacional de evaluación individual docente."
+                },
+                correct: "B",
+                justification: "El documento busca fortalecer el liderazgo del nivel intermedio y orientar prácticas que contribuyan a la mejora integral y sostenible de la educación pública en los territorios."
+            },
+            {
+                id: 2,
+                question: "¿A qué equipos está dirigido especialmente el Marco?",
+                options: {
+                    A: "A los equipos directivos de los Servicios Locales de Educación Pública (SLEP).",
+                    B: "Exclusivamente a los estudiantes de educación secundaria.",
+                    C: "Únicamente a los equipos de aula de cada establecimiento.",
+                    D: "A las organizaciones privadas ajenas al sistema educativo."
+                },
+                correct: "A",
+                justification: "El Marco fue pensado y diseñado especialmente para los equipos directivos de los SLEP, aunque puede orientar a otros responsables de redes educativas en la medida de lo posible."
+            },
+            {
+                id: 3,
+                question: "¿Cuál es la naturaleza del Marco?",
+                options: {
+                    A: "Es una ley que establece sanciones obligatorias.",
+                    B: "Es un manual de procedimientos administrativos con formularios cerrados.",
+                    C: "Es un referente de orientación estratégica no prescriptivo.",
+                    D: "Es un instrumento de evaluación estandarizada con rúbricas obligatorias."
+                },
+                correct: "C",
+                justification: "El texto aclara que el Marco no es prescriptivo y que no contiene instrumentos específicos o concretos para su implementación."
+            },
+            {
+                id: 4,
+                question: "¿Cuáles son los dos grandes ámbitos que estructuran el Marco?",
+                options: {
+                    A: "Planificación anual y evaluación final.",
+                    B: "Gestión financiera y administración de personal.",
+                    C: "Liderazgo escolar y supervisión de aula.",
+                    D: "Dimensiones de prácticas y recursos personales."
+                },
+                correct: "D",
+                justification: "La estructura del documento distingue las dimensiones de prácticas y los recursos personales que respaldan el quehacer de los líderes."
+            },
+            {
+                id: 5,
+                question: "¿Cuántas dimensiones de prácticas presenta el Marco?",
+                options: {
+                    A: "Cuatro.",
+                    B: "Seis.",
+                    C: "Ocho.",
+                    D: "Diez."
+                },
+                correct: "B",
+                justification: "El Marco organiza las prácticas de gestión y liderazgo del nivel intermedio en seis dimensiones."
+            },
+            {
+                id: 6,
+                question: "¿Qué caracteriza a una práctica según el documento?",
+                options: {
+                    A: "Es una actividad individual que no requiere coordinación.",
+                    B: "Es una norma jurídica que debe aplicarse de manera idéntica.",
+                    C: "Es un conjunto de actividades realizadas por personas de una organización con expectativas de resultados educativos compartidos.",
+                    D: "Es una tarea exclusivamente administrativa."
+                },
+                correct: "C",
+                justification: "El documento define las prácticas como actividades ejercidas por un grupo de personas que trabaja en una organización y comparte expectativas de resultados educativos."
+            },
+            {
+                id: 7,
+                question: "¿Qué ejemplo muestra la integración entre gestión y liderazgo?",
+                options: {
+                    A: "Planificar una acción convocando a participar a los integrantes de la comunidad educativa.",
+                    B: "Comprar materiales sin relacionarlos con metas educativas.",
+                    C: "Distribuir tareas sin comunicar los objetivos.",
+                    D: "Realizar una actividad sin seguimiento ni participación."
+                },
+                correct: "A",
+                justification: "La planificación representa una acción de gestión; convocar a la comunidad para participar incorpora el liderazgo. La combinación potencia los resultados."
+            },
+            {
+                id: 8,
+                question: "¿Qué plantea la primera dimensión del Marco?",
+                options: {
+                    A: "Centralizar todas las decisiones pedagógicas.",
+                    B: "Construir una visión compartida para diseñar e implementar una estrategia educativa territorial.",
+                    C: "Priorizar exclusivamente la adquisición de equipamiento.",
+                    D: "Reemplazar los proyectos educativos de cada establecimiento."
+                },
+                correct: "B",
+                justification: "La primera dimensión se centra en construir una orientación común y una estrategia educativa para el territorio."
+            },
+            {
+                id: 9,
+                question: "¿Cuál de las siguientes acciones corresponde a la primera dimensión?",
+                options: {
+                    A: "Evitar que los establecimientos conozcan los objetivos territoriales.",
+                    B: "Desarrollar actividades aisladas sin planificación.",
+                    C: "Construir participativamente una visión y alinear los instrumentos de gestión.",
+                    D: "Limitar la estrategia a decisiones financieras."
+                },
+                correct: "C",
+                justification: "La dimensión de visión compartida incluye socializar objetivos, construir una visión participativa, planificar y procurar coherencia entre los instrumentos de gestión."
+            },
+            {
+                id: 10,
+                question: "¿Qué busca principalmente la segunda dimensión?",
+                options: {
+                    A: "Promover participación, colaboración y articulación con la comunidad educativa y actores sociales.",
+                    B: "Sustituir la participación por instrucciones unilaterales.",
+                    C: "Concentrar el trabajo en el control presupuestario.",
+                    D: "Reducir la comunicación entre establecimientos."
+                },
+                correct: "A",
+                justification: "La segunda dimensión promueve una cultura participativa y colaborativa, articulando a las comunidades educativas y actores del entorno."
+            },
+            {
+                id: 11,
+                question: "¿Cuál es una práctica coherente con la segunda dimensión?",
+                options: {
+                    A: "Impedir el intercambio de experiencias entre establecimientos.",
+                    B: "Evitar espacios de encuentro con las familias.",
+                    C: "Desarrollar redes y mesas territoriales y fortalecer la comunicación.",
+                    D: "Restringir la participación estudiantil a actividades ceremoniales."
+                },
+                correct: "C",
+                justification: "El documento destaca redes, mesas territoriales, espacios de encuentro, participación de estudiantes y familias y comunicación efectiva."
+            },
+            {
+                id: 12,
+                question: "¿Qué propósito tiene la tercera dimensión?",
+                options: {
+                    A: "Aumentar la cantidad de trámites administrativos.",
+                    B: "Promover y apoyar el liderazgo pedagógico para el aprendizaje profundo en el territorio.",
+                    C: "Unificar todos los métodos de enseñanza sin considerar contextos.",
+                    D: "Delegar la mejora pedagógica exclusivamente a las familias."
+                },
+                correct: "B",
+                justification: "La tercera dimensión sitúa el liderazgo pedagógico y el aprendizaje profundo como focos centrales del apoyo desde el nivel intermedio."
+            },
+            {
+                id: 13,
+                question: "¿Cuál de estas acciones se relaciona con la tercera dimensión?",
+                options: {
+                    A: "Evitar diagnósticos para no modificar las prácticas.",
+                    B: "Tomar decisiones únicamente por intuición.",
+                    C: "Suspender la reflexión pedagógica entre docentes.",
+                    D: "Desarrollar diagnósticos compartidos, ciclos de mejora y análisis de datos."
+                },
+                correct: "D",
+                justification: "La dimensión contempla diagnósticos, acompañamiento técnico-pedagógico, autoevaluación, monitoreo, reflexión pedagógica y uso de evidencia."
+            },
+            {
+                id: 14,
+                question: "¿Qué enfatiza la cuarta dimensión?",
+                options: {
+                    A: "El desarrollo y la distribución de capacidades para la mejora continua de la educación en el territorio.",
+                    B: "La concentración de todas las responsabilidades en una sola persona.",
+                    C: "La eliminación de los procesos de formación profesional.",
+                    D: "La reducción del acompañamiento a los equipos directivos."
+                },
+                correct: "A",
+                justification: "La cuarta dimensión busca fortalecer capacidades profesionales y organizacionales y distribuir el liderazgo para sostener la mejora."
+            },
+            {
+                id: 15,
+                question: "¿Cuál es una acción propia de la cuarta dimensión?",
+                options: {
+                    A: "Asignar funciones sin considerar capacidades.",
+                    B: "Evitar la inducción de nuevos directivos.",
+                    C: "Impulsar planes contextualizados de desarrollo profesional y acompañamiento.",
+                    D: "Limitar el aprendizaje profesional a cursos externos."
+                },
+                correct: "C",
+                justification: "El documento propone inducción y acompañamiento, liderazgo distribuido y desarrollo profesional que responda a las necesidades de cada establecimiento y territorio."
+            },
+            {
+                id: 16,
+                question: "¿Qué desafío plantea la quinta dimensión?",
+                options: {
+                    A: "Aumentar la competencia entre comunidades educativas.",
+                    B: "Desarrollar una cultura de bienestar integral, inclusión, respeto a la diversidad y ciudadanía democrática.",
+                    C: "Priorizar exclusivamente los resultados de pruebas estandarizadas.",
+                    D: "Separar la convivencia de los procesos de enseñanza y aprendizaje."
+                },
+                correct: "B",
+                justification: "La quinta dimensión promueve bienestar, inclusión, dignidad, derechos, diversidad y formación de una ciudadanía responsable y democrática."
+            },
+            {
+                id: 17,
+                question: "¿Cuál de las siguientes prácticas corresponde a la quinta dimensión?",
+                options: {
+                    A: "Desatender las condiciones socioemocionales del estudiantado.",
+                    B: "Tratar la diversidad como un obstáculo para la gestión.",
+                    C: "Evitar la participación comunitaria en temas de convivencia.",
+                    D: "Promover el buen trato, el respeto, la colaboración y ambientes socioemocionales adecuados."
+                },
+                correct: "D",
+                justification: "El documento destaca el buen trato, el respeto, la colaboración, la inclusión y la creación de ambientes socioemocionales adecuados para enseñar y aprender."
+            },
+            {
+                id: 18,
+                question: "¿Qué aborda la sexta dimensión?",
+                options: {
+                    A: "La gestión de recursos y condiciones institucionales para el desarrollo educativo en distintos contextos territoriales.",
+                    B: "La selección de contenidos de una asignatura específica.",
+                    C: "La evaluación exclusiva del desempeño estudiantil.",
+                    D: "La organización de actividades extracurriculares solamente."
+                },
+                correct: "A",
+                justification: "La sexta dimensión se refiere a gestionar los recursos y condiciones institucionales que permiten el desarrollo educativo en contextos diversos."
+            },
+            {
+                id: 19,
+                question: "Según el Marco, ¿cómo deben administrarse los recursos?",
+                options: {
+                    A: "De manera improvisada y sin relación con las metas.",
+                    B: "Priorizando siempre el gasto administrativo.",
+                    C: "De forma ordenada, transparente y eficiente, al servicio de los objetivos pedagógicos.",
+                    D: "Distribuyéndolos por igual sin considerar necesidades ni resultados."
+                },
+                correct: "C",
+                justification: "La gestión de recursos humanos, económicos y de equipamiento debe apoyar lo pedagógico y alinearse con los planes de mejora y metas estratégicas."
+            },
+            {
+                id: 20,
+                question: "¿Por qué se deben utilizar datos y evidencias al tomar decisiones?",
+                options: {
+                    A: "Para justificar decisiones ya tomadas sin analizarlas.",
+                    B: "Para diagnosticar necesidades, evaluar resultados y priorizar intervenciones efectivas.",
+                    C: "Para reemplazar toda deliberación profesional.",
+                    D: "Para evitar revisar la continuidad de los programas."
+                },
+                correct: "B",
+                justification: "El documento plantea recopilar información, evaluar el impacto de las acciones y usar la evidencia para orientar decisiones, recursos y estrategias."
+            },
+            {
+                id: 21,
+                question: "¿Cuáles son los tres componentes de los recursos personales?",
+                options: {
+                    A: "Normas, reglamentos y sanciones.",
+                    B: "Planificación, presupuesto y supervisión.",
+                    C: "Principios, habilidades y conocimientos profesionales.",
+                    D: "Evaluación, promoción y asistencia."
+                },
+                correct: "C",
+                justification: "El Marco organiza los recursos personales en principios, habilidades y conocimientos profesionales."
+            },
+            {
+                id: 22,
+                question: "¿Cuál de las siguientes opciones contiene únicamente principios señalados en el Marco?",
+                options: {
+                    A: "Ética y probidad, justicia educativa, confianza y vocación de servicio público.",
+                    B: "Puntualidad, competitividad, obediencia y productividad.",
+                    C: "Innovación, planificación, evaluación y supervisión.",
+                    D: "Comunicación, mediación, análisis y gestión financiera."
+                },
+                correct: "A",
+                justification: "Los cuatro principios expresamente señalados son ética y probidad, justicia educativa, confianza y vocación de servicio público."
+            },
+            {
+                id: 23,
+                question: "¿Qué función cumplen los principios en el liderazgo?",
+                options: {
+                    A: "Son técnicas para elaborar presupuestos.",
+                    B: "Guían la conducta y ayudan a mantener coherencia en las decisiones.",
+                    C: "Sustituyen los conocimientos profesionales.",
+                    D: "Se aplican únicamente durante situaciones de crisis."
+                },
+                correct: "B",
+                justification: "Los principios se basan en un sistema de creencias y un marco valórico que orienta la conducta y da coherencia a las decisiones."
+            },
+            {
+                id: 24,
+                question: "¿Qué habilidad permite analizar problemáticas complejas desde una mirada amplia?",
+                options: {
+                    A: "Manejo de inventarios.",
+                    B: "Comunicación protocolar.",
+                    C: "Pensamiento sistémico.",
+                    D: "Control de asistencia."
+                },
+                correct: "C",
+                justification: "El pensamiento sistémico y la reflexión se identifican como habilidades para analizar problemáticas complejas."
+            },
+            {
+                id: 25,
+                question: "¿Qué conjunto de habilidades permite convocar hacia un objetivo común?",
+                options: {
+                    A: "Liderazgo, escucha activa y colaboración.",
+                    B: "Auditoría, archivo y contabilidad.",
+                    C: "Mediación, sanción y fiscalización.",
+                    D: "Planificación, inventario y mantenimiento."
+                },
+                correct: "A",
+                justification: "El Marco agrupa liderazgo, escucha activa y colaboración entre las habilidades para convocar hacia un objetivo común."
+            },
+            {
+                id: 26,
+                question: "¿Qué habilidades se vinculan con la relación con la comunidad?",
+                options: {
+                    A: "Cálculo financiero y control presupuestario.",
+                    B: "Articulación y alianzas, y comunicación efectiva.",
+                    C: "Evaluación sumativa y calificación.",
+                    D: "Gestión curricular y supervisión de aula."
+                },
+                correct: "B",
+                justification: "La articulación, las alianzas y la comunicación efectiva son habilidades identificadas para relacionarse con la comunidad."
+            },
+            {
+                id: 27,
+                question: "¿Cuál es una habilidad para enfrentar un mundo cambiante?",
+                options: {
+                    A: "Memorización de procedimientos sin adaptación.",
+                    B: "Evitar los conflictos y las contingencias.",
+                    C: "Mediación y resolución de conflictos.",
+                    D: "Aplicación rígida de decisiones anteriores."
+                },
+                correct: "C",
+                justification: "El Marco incluye mediación y resolución de conflictos, manejo de crisis y contingencias y agilidad para el aprendizaje."
+            },
+            {
+                id: 28,
+                question: "¿Qué área de conocimientos profesionales incluye gestión del currículo, procesos de aprendizaje y evaluación?",
+                options: {
+                    A: "Política educativa y relaciones con la comunidad.",
+                    B: "Enseñanza efectiva y desarrollo docente.",
+                    C: "Administración financiera exclusivamente.",
+                    D: "Planificación territorial y obras públicas."
+                },
+                correct: "B",
+                justification: "La enseñanza efectiva y el desarrollo docente abarcan currículo, aprendizaje, evaluación, trayectoria escolar y desarrollo profesional."
+            },
+            {
+                id: 29,
+                question: "¿Qué significa el liderazgo intermedio hacia abajo, lateralmente y hacia arriba?",
+                options: {
+                    A: "Hacia abajo: apoyar a unidades educativas; lateralmente: colaborar entre pares; hacia arriba: influir y mediar en la política educativa.",
+                    B: "Hacia abajo: fiscalizar estudiantes; lateralmente: competir; hacia arriba: evitar la política.",
+                    C: "Hacia abajo: administrar recursos; lateralmente: sancionar; hacia arriba: centralizar.",
+                    D: "Hacia abajo: emitir normas; lateralmente: aislar equipos; hacia arriba: delegar toda responsabilidad."
+                },
+                correct: "A",
+                justification: "El documento describe tres direcciones: apoyar el núcleo pedagógico de las unidades educativas, conectar y colaborar entre pares, e influir y mediar entre política y práctica."
+            },
+            {
+                id: 30,
+                question: "¿Cuál es la mejor síntesis del enfoque del Marco?",
+                options: {
+                    A: "La mejora depende exclusivamente de la gestión administrativa de cada establecimiento.",
+                    B: "Las acciones aisladas y de corto plazo son suficientes para transformar el sistema.",
+                    C: "La mejora territorial requiere visión compartida, colaboración, apoyo pedagógico, desarrollo de capacidades, inclusión y gestión basada en evidencias.",
+                    D: "El liderazgo corresponde únicamente a una autoridad y no necesita trabajo colectivo."
+                },
+                correct: "C",
+                justification: "El Marco propone una perspectiva sistémica y colectiva: articula las seis dimensiones de prácticas con recursos personales para impulsar una mejora educativa integral y sostenible."
+            }
+        ];
+
+        // Global State variables
+        let currentQuestions = [];
+        let userAnswers = {};
+
+        // Shuffle Array Function (Fisher-Yates)
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Start Quiz Procedure
+        function startQuiz() {
+            // Shuffle questions randomly
+            currentQuestions = shuffleArray(rawQuestions);
+            userAnswers = {};
+
+            // Hide Welcome & Results, Show Quiz & Controls
+            document.getElementById('welcomeCard').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('progressBarContainer').classList.remove('hidden');
+            document.getElementById('quizContainer').classList.remove('hidden');
+            document.getElementById('submitSection').classList.remove('hidden');
+            document.getElementById('progressBadge').classList.remove('hidden');
+
+            // Render Questions
+            renderQuestions();
+            updateProgress();
+
+            // Scroll smoothly to top of quiz
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Questions in DOM
+        function renderQuestions() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            currentQuestions.forEach((q, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-7 transition-all hover:border-slate-300';
+                questionCard.id = `qCard_${q.id}`;
+
+                // Header / Index
+                const questionHeader = `
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-100">
+                            Pregunta ${index + 1} de 30
+                        </span>
+                        <span id="status_${q.id}" class="text-xs text-slate-400 font-medium">
+                            Sin responder
+                        </span>
+                    </div>
+                    <h3 class="text-base md:text-lg font-semibold text-slate-900 mb-4 leading-relaxed">
+                        ${q.question}
+                    </h3>
+                `;
+
+                // Options List
+                let optionsHtml = '<div class="space-y-3">';
+                Object.keys(q.options).forEach(key => {
+                    const optionText = q.options[key];
+                    optionsHtml += `
+                        <label onclick="selectOption(${q.id}, '${key}')" class="flex items-start p-3.5 md:p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition-all select-none group">
+                            <div class="flex items-center h-5 mt-0.5">
+                                <input type="radio" name="question_${q.id}" value="${key}" class="w-4 h-4 text-sky-600 focus:ring-sky-500 border-slate-300">
+                            </div>
+                            <div class="ml-3 text-sm text-slate-700 group-hover:text-slate-900 flex-grow">
+                                <span class="font-bold text-slate-900 mr-1.5">${key})</span> ${optionText}
+                            </div>
+                        </label>
+                    `;
+                });
+                optionsHtml += '</div>';
+
+                questionCard.innerHTML = questionHeader + optionsHtml;
+                container.appendChild(questionCard);
+            });
+        }
+
+        // Handle Option Selection
+        function selectOption(questionId, selectedKey) {
+            userAnswers[questionId] = selectedKey;
+
+            // Update UI status for this card
+            const statusBadge = document.getElementById(`status_${questionId}`);
+            if (statusBadge) {
+                statusBadge.textContent = "Respondida";
+                statusBadge.className = "text-xs text-emerald-600 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100";
+            }
+
+            // Update active option styling
+            const card = document.getElementById(`qCard_${questionId}`);
+            if (card) {
+                const labels = card.querySelectorAll('label');
+                labels.forEach(lbl => {
+                    const input = lbl.querySelector('input');
+                    if (input && input.value === selectedKey) {
+                        lbl.className = "flex items-start p-3.5 md:p-4 rounded-xl border-2 border-sky-600 bg-sky-50/50 cursor-pointer transition-all select-none";
+                    } else {
+                        lbl.className = "flex items-start p-3.5 md:p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition-all select-none group";
+                    }
+                });
+            }
+
+            updateProgress();
+        }
+
+        // Update Progress Bar & Counter
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const total = currentQuestions.length;
+            const percentage = Math.round((answeredCount / total) * 100);
+
+            document.getElementById('answeredCounter').textContent = `${answeredCount} / ${total} Respondidas`;
+            document.getElementById('progressText').textContent = `Avance: ${percentage}%`;
+            document.getElementById('progressCountText').textContent = `${answeredCount} de ${total} completadas`;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        // Calculate Results and Generate Feedback
+        function calculateResults() {
+            const answeredCount = Object.keys(userAnswers).length;
+
+            // Prompt if incomplete
+            if (answeredCount < currentQuestions.length) {
+                const confirmSubmit = window.confirm(`Has respondido ${answeredCount} de 30 preguntas. ¿Deseas finalizar la evaluación de todos modos?`);
+                if (!confirmSubmit) return;
+            }
+
+            let correctCount = 0;
+
+            // Feedback container setup
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            feedbackContainer.innerHTML = '';
+
+            currentQuestions.forEach((q, index) => {
+                const userChoice = userAnswers[q.id] || null;
+                const isCorrect = userChoice === q.correct;
+                if (isCorrect) correctCount++;
+
+                // Build item review card
+                const itemCard = document.createElement('div');
+                itemCard.className = `bg-white rounded-2xl border p-6 shadow-sm transition-all ${
+                    isCorrect ? 'border-emerald-200 bg-emerald-50/20' : 'border-rose-200 bg-rose-50/20'
+                }`;
+
+                let optionsReviewHtml = '<div class="space-y-2 my-4">';
+                Object.keys(q.options).forEach(key => {
+                    const optionText = q.options[key];
+                    let optionStyle = "border-slate-200 bg-white text-slate-700";
+                    let badge = "";
+
+                    if (key === q.correct) {
+                        optionStyle = "border-emerald-500 bg-emerald-100/70 text-emerald-900 font-semibold";
+                        badge = '<span class="ml-auto text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 rounded-md">Correcta</span>';
+                    } else if (key === userChoice && !isCorrect) {
+                        optionStyle = "border-rose-400 bg-rose-100/70 text-rose-900 font-semibold";
+                        badge = '<span class="ml-auto text-xs bg-rose-600 text-white font-bold px-2.5 py-0.5 rounded-md">Tu Selección</span>';
+                    }
+
+                    optionsReviewHtml += `
+                        <div class="flex items-center justify-between p-3 rounded-xl border text-sm ${optionStyle}">
+                            <div>
+                                <span class="font-bold mr-1.5">${key})</span> ${optionText}
+                            </div>
+                            ${badge}
+                        </div>
+                    `;
+                });
+                optionsReviewHtml += '</div>';
+
+                itemCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-500">Pregunta ${index + 1} de 30</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
+                            isCorrect 
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                            : 'bg-rose-100 text-rose-800 border border-rose-200'
+                        }">
+                            <i class="fa-solid ${isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-600'}"></i>
+                            ${isCorrect ? 'Correcto' : (userChoice ? 'Incorrecto' : 'Sin Responder')}
+                        </span>
+                    </div>
+
+                    <h4 class="text-base font-bold text-slate-900 mb-3">${q.question}</h4>
+                    
+                    ${optionsReviewHtml}
+
+                    <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs md:text-sm text-slate-700 space-y-1">
+                        <div class="font-bold text-slate-900 flex items-center gap-1.5 mb-1">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                            <span>Justificación Oficial:</span>
+                        </div>
+                        <p class="leading-relaxed text-slate-600">${q.justification}</p>
+                    </div>
+                `;
+
+                feedbackContainer.appendChild(itemCard);
+            });
+
+            // Score Calculations
+            const score = correctCount;
+            const percentage = Math.round((score / 30) * 100);
+
+            // Determine Level
+            let levelText = "";
+            let levelClass = "";
+
+            if (percentage >= 90) {
+                levelText = "Excelente";
+                levelClass = "bg-emerald-600 text-white";
+            } else if (percentage >= 75) {
+                levelText = "Bueno";
+                levelClass = "bg-sky-600 text-white";
+            } else if (percentage >= 60) {
+                levelText = "Regular";
+                levelClass = "bg-amber-500 text-white";
+            } else {
+                levelText = "Necesita reforzamiento";
+                levelClass = "bg-rose-600 text-white";
+            }
+
+            // Update UI Elements
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+            
+            const levelBadge = document.getElementById('levelBadge');
+            levelBadge.textContent = levelText;
+            levelBadge.className = `inline-block px-4 py-1.5 rounded-full text-sm font-bold mt-1 shadow-sm ${levelClass}`;
+
+            // Toggle visibility
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('submitSection').classList.add('hidden');
+            document.getElementById('progressBarContainer').classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+
+            // Scroll to Top of Results
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
